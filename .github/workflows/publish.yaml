@@ -1,0 +1,36 @@
+name: Build S3 Registry and publish TF Module
+
+on:
+  push:
+  workflow_dispatch:
+
+env:
+  MODULE_NAME: "AWS-MLOps-module"
+
+jobs:
+  terraform-host-bucket:
+    uses: ./.github/workflows/terraform-template.yaml
+    secrets: inherit
+    with:
+      terraform-state-bucket: "hot-sheep-nonprod-state"
+      dynamodb-table: "terraform_lock"
+      state-bucket-role-arn: "arn:aws:iam::283211881821:role/TerraformNonprodTFStateAccess"
+      state-file-name: "mlops_module_registry/terraform.tfstate"
+      registry-bucket: mlops-module-registry
+      terraform-dir: host_bucket
+      destroy: true
+
+  upload-module:
+    runs-on: ubuntu-22.04
+    if: github.ref_name == 'main'
+    needs: terraform-host-bucket
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Package module as zip
+        run: |
+          zip -r "${MODULE_NAME}.zip" . -x *.* host_bucket/**\*
+    #   - name: Upload module to S3
+    #     run: |
+    #       . ./scripts/assume-provisioner-role.sh
+    #       aws s3 cp $MODULE_NAME.zip s3://$BUCKET_NAME/$MODULE_NAME.zip

@@ -1,0 +1,95 @@
+name: Terraform
+
+env:
+  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_NON_PROD_DEPLOYMENT_USER_ACCESS_KEY_ID }}
+  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_NON_PROD_DEPLOYMENT_USER_SECRET_ACCESS_KEY }}
+  AWS_DEFAULT_REGION: eu-west-1
+
+on:
+  workflow_call:
+    inputs:
+      terraform-state-bucket:
+        required: true
+        type: string
+      terraform-dir:
+        required: true
+        type: string
+      dynamodb-table:
+        required: true
+        type: string
+      state-bucket-role-arn:
+        required: true
+        type: string
+      registry-bucket:
+        required: true
+        type: string
+      state-file-name:
+        required: true
+        type: string
+      # Set to true if infrastructure should be auto-destroyed after creation.
+      destroy:
+        required: true
+        type: boolean
+
+jobs:
+  Plan-Infrastructure:
+    runs-on: ubuntu-22.04
+    container:
+      image: hashicorp/terraform:1.6.0
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Terraform Plan
+        run: |
+          export TF_VAR_bucket_name="${{ inputs.registry-bucket }}"
+          terraform init \
+          -backend-config "bucket=${{ inputs.terraform-state-bucket }}" \
+          -backend-config "dynamodb_table=${{ inputs.dynamodb-table }}" \
+          -backend-config "role_arn=${{ inputs.state-bucket-role-arn }}" \
+          -backend-config "region=$AWS_DEFAULT_REGION" \
+          -backend-config "key=${{ inputs.state-file-name }}"
+          terraform plan
+        working-directory: ${{ inputs.terraform-dir }}
+
+  Deploy-Infrastructure:
+    runs-on: ubuntu-22.04
+    if: github.ref_name == 'main'
+    needs: Plan-Infrastructure
+    container:
+      image: hashicorp/terraform:1.6.0
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Terraform Apply
+        run: |
+          export TF_VAR_bucket_name="${{ inputs.registry-bucket }}"
+          terraform init \
+          -backend-config "bucket=${{ inputs.terraform-state-bucket }}" \
+          -backend-config "dynamodb_table=${{ inputs.dynamodb-table }}" \
+          -backend-config "role_arn=${{ inputs.state-bucket-role-arn }}" \
+          -backend-config "region=$AWS_DEFAULT_REGION" \
+          -backend-config "key=${{ inputs.state-file-name }}"
+          terraform apply -auto-approve
+        working-directory: ${{ inputs.terraform-dir }}
+
+  Destroy-Infrastructure:
+    runs-on: ubuntu-22.04
+    container:
+      image: hashicorp/terraform:1.6.0
+    needs: Deploy-Infrastructure
+    # Only running job if 'destroy' flag is set to true
+    if: ${{ inputs.destroy }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Terraform Destroy
+        run: |
+          export TF_VAR_bucket_name="${{ inputs.registry-bucket }}"
+          terraform init \
+          -backend-config "bucket=${{ inputs.terraform-state-bucket }}" \
+          -backend-config "dynamodb_table=${{ inputs.dynamodb-table }}" \
+          -backend-config "role_arn=${{ inputs.state-bucket-role-arn }}" \
+          -backend-config "region=$AWS_DEFAULT_REGION" \
+          -backend-config "key=${{ inputs.state-file-name }}"
+          terraform destroy -auto-approve
+        working-directory: ${{ inputs.terraform-dir }}
