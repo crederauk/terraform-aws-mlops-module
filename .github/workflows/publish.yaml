@@ -15,7 +15,7 @@ jobs:
       state-file-name: "mlops_module_registry/terraform.tfstate"
       registry-bucket: mlops-module-registry
       terraform-dir: host_bucket
-      destroy: true
+      destroy: false
 
   upload-module:
     runs-on: ubuntu-22.04
@@ -32,3 +32,22 @@ jobs:
         with:
           name: module-artifact
           path: ${{ github.event.repository.name }}.zip
+
+  upload-to-s3:
+    runs-on: ubuntu-22.04
+    if: github.ref_name == 'main'
+    needs: upload-module
+    steps:
+      - uses: actions/download-artifact@v3
+        with:
+          name: module-artifact
+
+      - name: Upload to S3
+        run: |
+          . ./scripts/assume-provisioner-role.sh
+          aws s3 cp ${{ github.event.repository.name }}.zip s3://$BUCKET_NAME --recursive
+        env:
+          BUCKET_NAME: mlops-module-registry
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_NON_PROD_DEPLOYMENT_USER_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_NON_PROD_DEPLOYMENT_USER_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: eu-west-1
