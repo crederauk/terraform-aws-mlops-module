@@ -29,8 +29,9 @@ jobs:
 
       - name: Package module as zip
         run: |
-          zip -r "${MODULE_NAME}.zip" . -x *.* host_bucket/**\*
-    #   - name: Upload module to S3
-    #     run: |
-    #       . ./scripts/assume-provisioner-role.sh
-    #       aws s3 cp $MODULE_NAME.zip s3://$BUCKET_NAME/$MODULE_NAME.zip
+          zip -r "${MODULE_NAME}.zip" . -x ".*" "host_bucket/*"
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: module-artifact
+          path: ${MODULE_NAME}.zip
