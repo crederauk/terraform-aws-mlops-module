@@ -38,6 +38,8 @@ jobs:
     if: github.ref_name == 'main'
     needs: upload-module
     steps:
+      - uses: actions/checkout@v4
+
       - uses: actions/download-artifact@v3
         with:
           name: module-artifact
