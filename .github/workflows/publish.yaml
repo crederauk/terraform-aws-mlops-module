@@ -4,9 +4,6 @@ on:
   push:
   workflow_dispatch:
 
-env:
-  MODULE_NAME: "AWS-MLOps-module"
-
 jobs:
   terraform-host-bucket:
     uses: ./.github/workflows/terraform-template.yaml
@@ -29,9 +26,9 @@ jobs:
 
       - name: Package module as zip
         run: |
-          zip -r "${MODULE_NAME}.zip" . -x ".*" "host_bucket/*"
+          zip -r "${{ github.event.repository.name }}.zip" . -x ".*" "host_bucket/*"
 
       - uses: actions/upload-artifact@v3
         with:
           name: module-artifact
-          path: ${MODULE_NAME}.zip
+          path: ${{ github.event.repository.name }}.zip
