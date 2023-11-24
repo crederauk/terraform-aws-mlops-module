@@ -5,18 +5,6 @@ on:
   workflow_dispatch:
 
 jobs:
-  terraform-host-bucket:
-    uses: ./.github/workflows/terraform-template.yaml
-    secrets: inherit
-    with:
-      terraform-state-bucket: "hot-sheep-nonprod-state"
-      dynamodb-table: "terraform_lock"
-      state-bucket-role-arn: "arn:aws:iam::283211881821:role/TerraformNonprodTFStateAccess"
-      state-file-name: "mlops_module_registry/terraform.tfstate"
-      registry-bucket: mlops-module-registry
-      terraform-dir: host_bucket
-      destroy: true
-
   upload-module:
     runs-on: ubuntu-22.04
     if: github.ref_name == 'main'
@@ -35,7 +23,7 @@ jobs:
   upload-to-s3:
     runs-on: ubuntu-22.04
     if: github.ref_name == 'main'
-    needs: [upload-module, terraform-host-bucket]
+    needs: upload-module
     steps:
       - uses: actions/checkout@v4
 
@@ -44,11 +32,9 @@ jobs:
           name: module-artifact
 
       - name: Upload to S3
-        run: |
-          . ./scripts/assume-provisioner-role.sh
-          aws s3 cp ${{ github.event.repository.name }}.zip s3://$BUCKET_NAME
+        run: aws s3 cp ${{ github.event.repository.name }}.zip s3://$BUCKET_NAME
         env:
-          BUCKET_NAME: mlops-module-registry
+          BUCKET_NAME: crederauk-module-registry
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_NON_PROD_DEPLOYMENT_USER_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_NON_PROD_DEPLOYMENT_USER_SECRET_ACCESS_KEY }}
           AWS_DEFAULT_REGION: eu-west-1
