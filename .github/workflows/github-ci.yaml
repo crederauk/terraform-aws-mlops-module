@@ -1,0 +1,105 @@
+name: "MLOps CICD Pipeline"
+on: push
+
+jobs:
+  code-quality:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: 3.9
+
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r .github/workflows/dev-requirements.txt
+
+      - name: Run Pylint
+        run: |
+          pylint . --errors-only
+
+      - name: Run Flake8
+        run: |
+          flake8 . --count --show-source --statistics --ignore=E501
+
+      - name: Terraform Init
+        id: init
+        working-directory: .
+        run: terraform init -backend=false
+
+      - name: Terraform Validate
+        id: validate
+        working-directory: .
+        run: terraform validate -no-color
+
+      - name: Terraform Format
+        id: fmt
+        working-directory: .
+        run: terraform fmt -recursive
+
+      - name: Setup TFLint
+        uses: terraform-linters/setup-tflint@v3
+        with:
+          tflint_version: latest
+
+      - name: Run TFLint
+        working-directory: .
+        run: |
+          tflint --init
+          tflint -f compact --recursive
+
+  tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: 3.9
+
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r .github/workflows/dev-requirements.txt
+
+      - name: Run Pytest
+        run: |
+          pytest tests/
+
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: "1.19"
+
+      - name: Get Terratest Dependency
+        run: |
+          go mod init github.com/konradbcredera/AWS-MLOps-module
+          go mod tidy
+          go get github.com/gruntwork-io/terratest/modules/terraform
+
+      - name: Terratests
+        working-directory: tests/
+        run: go test -v ./...
+
+  security-scans:
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: tfsec
+        uses: aquasecurity/tfsec-sarif-action@v0.1.4
+        with:
+          sarif_file: tfsec.sarif
+
+      - name: Upload SARIF file
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+          sarif_file: tfsec.sarif
