@@ -11,7 +11,7 @@ This repo contains a terraform module with corresponding AWS resources that enab
 
  ```
 module "MLOps" {
-  source  = "github.com/konradbachusz/AWS-MLOps-module
+  source  = "github.com/crederauk/terraform-aws-mlops-module?ref=<MODULE_VERSION>"
   resource_naming_prefix  = "your-app"
   data_s3_bucket          = "your-bucket-name"
   data_location_s3        = "/your_s3_folder/your_data.csv"
