@@ -29,19 +29,27 @@ data "aws_iam_policy_document" "sagemaker" {
   statement {
     sid = "SagemakerAccess"
     actions = [
-      "sagemaker:*"
+      "sagemaker:CreateEndpoint*",
+      "sagemaker:DeleteEndpoint*"
     ]
-    resources = ["*"]
+    resources = ["arn:aws:sagemaker:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:endpoint/${local.endpoint_name}"]
   }
 
   statement {
-    sid = "CloudwatchLogGroupAccess"
+    sid = "CreateLogGroup"
     actions = [
-      "logs:CreateLogGroup",
+      "logs:CreateLogGroup"
+    ]
+    resources = ["arn:aws:logs:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:log-group:/aws/sagemaker/*"]
+  }
+
+  statement {
+    sid = "LogGroupPublish"
+    actions = [
       "logs:CreateLogStream",
       "logs:PutLogEvents"
     ]
-    resources = ["*"]
+    resources = ["arn:aws:logs:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:log-group:/aws/sagemaker/*:log-stream:${aws_sagemaker_notebook_instance_lifecycle_configuration.training_notebook.name}/*"]
   }
 
   statement {

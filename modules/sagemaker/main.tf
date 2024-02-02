@@ -9,25 +9,21 @@ resource "aws_sagemaker_notebook_instance" "training_notebook" {
 
 resource "aws_sagemaker_notebook_instance_lifecycle_configuration" "training_notebook" {
   name = "${local.model_name}-notebook-instance"
-  on_start = base64encode(<<EOL
-       #!/bin/bash
-       # Location of the scripts
-       aws s3 sync s3://${var.config_s3_bucket}/ /home/ec2-user/SageMaker/ --delete --exact-timestamps --exclude "*" --include "*.py" --include "*.ipynb"
-
-       # Make the ipython notebooks editable after copy
-       chmod -R 777 /home/ec2-user/SageMaker/
-
-       # Location of the csv file 
-       echo "data_location_s3=${var.data_s3_bucket}${var.data_location_s3}" > /home/ec2-user/SageMaker/.env
-       echo "target=${var.model_target_variable}" >> /home/ec2-user/SageMaker/.env
-       echo "algorithm_choice=${var.algorithm_choice}" >> /home/ec2-user/SageMaker/.env
-       echo "endpoint_name=${local.endpoint_name}" >> /home/ec2-user/SageMaker/.env
-       echo "model_name=${local.model_name}" >> /home/ec2-user/SageMaker/.env
-       echo "model_s3_bucket=${var.model_s3_bucket}" >> /home/ec2-user/SageMaker/.env
-       echo "inference_instance_type" = ${var.inference_instance_type} >> /home/ec2-user/SageMaker/.env
-       echo "inference_instance_count" = ${var.inference_instance_count} >> /home/ec2-user/SageMaker/.env
-       echo "ecr_repo_uri" = ${var.ecr_repo_uri} >> /home/ec2-user/SageMaker/.env
-       echo "tuning_metric" = ${var.tuning_metric} >> /home/ec2-user/SageMaker/.env
-     EOL
-  )
+  on_start = base64encode(templatefile("${path.module}/templates/startupscript.sh.tftpl",
+    {
+      config_s3_bucket = var.config_s3_bucket
+      env = {
+        data_location_s3         = "${var.data_s3_bucket}${var.data_location_s3}"
+        target                   = var.model_target_variable
+        algorithm_choice         = var.algorithm_choice
+        endpoint_name            = local.endpoint_name
+        model_name               = local.model_name
+        model_s3_bucket          = var.model_s3_bucket
+        inference_instance_type  = var.inference_instance_type
+        inference_instance_count = var.inference_instance_count
+        ecr_repo_uri             = var.ecr_repo_uri
+        tuning_metric            = var.tuning_metric
+      }
+    }
+  ))
 }

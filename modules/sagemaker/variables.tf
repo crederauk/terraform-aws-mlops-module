@@ -35,7 +35,7 @@ variable "training_notebook_instance_type" {
 # Model
 variable "inference_instance_type" {
   description = "The instance type to be created for serving the model. Must be a valid EC2 instance type"
-  default     = "ml.t2.medium"
+  default     = "inf1.xlarge"
   type        = string
 }
 variable "inference_instance_count" {

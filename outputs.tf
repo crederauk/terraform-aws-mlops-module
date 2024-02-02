@@ -4,15 +4,15 @@ output "ecr_repository" {
   value       = module.ecr.repository
 }
 
-output "ecr_encryption_key" {
-  description = "The ECR repository encryption KMS key Terraform object."
-  value       = module.ecr.encryption_key
+output "ecr" {
+  description = "The ECR repository module outputs. Contains both 'repository' and 'encryption_key' attributes, that are the ECR repository and KMS encryption key Terraform object respectively."
+  value       = module.ecr
 }
 
 # Glue
-output "glue_retraining_job" {
-  description = "The Glue retraining job Terraform object."
-  value       = one(module.retraining_job[*].retraining_job)
+output "glue" {
+  description = "The Glue module outputs. Contains both 'retraining_job' and 'retraining_role' attributes, that are the Glue retraining job and IAM role Terraform objects respectively."
+  value       = one(module.retraining_job[*])
 }
 
 output "glue_retraining_role" {
