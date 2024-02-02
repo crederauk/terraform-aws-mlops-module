@@ -45,7 +45,7 @@ variable "data_s3_bucket_encryption_key_arn" {
   type        = string
   default     = ""
   validation {
-    condition     = (substr(var.data_s3_bucket_encryption_key_arn, 0, 7) == "arn:aws:") || (var.data_s3_bucket_encryption_key_arn == "")
+    condition     = (substr(var.data_s3_bucket_encryption_key_arn, 0, 8) == "arn:aws:") || (var.data_s3_bucket_encryption_key_arn == "")
     error_message = "The data_s3_bucket_encryption_key_arn value must be a valid ARN, starting with \"arn:aws:\"."
   }
 }

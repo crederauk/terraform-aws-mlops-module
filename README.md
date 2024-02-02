@@ -15,15 +15,16 @@ module "MLOps" {
   resource_naming_prefix  = "your-app"
   data_s3_bucket          = "your-bucket-name"
   data_location_s3        = "/your_s3_folder/your_data.csv"
+  data_s3_bucket_encryption_key_arn = "arn:aws:your_kms_key_arn"
   model_target_variable   = "y"
   model_name              = "your-ml-model"
   retrain_model_bool      = true
   retraining_schedule     = "cron(0 8 1 * ? *)"
-  pycaret_ecr_name        = "your-ecr-name"
   algorithm_choice        = "classification"
-  endpoint_name           = "classification-model-endpoint"
   sagemaker_training_notebook_instance_type = "ml.m4.xlarge"
+  inference_instance_type     = "ml.m4.xlarge"
   inference_instance_count    = 1
+  tuning_metric = "AUC"
   tags                    = {
                               my-tag-key = "my-tag-value"
                             }
@@ -81,13 +82,36 @@ No resources.
 | Name | Description |
 |------|-------------|
 | <a name="output_config_bucket"></a> [config\_bucket](#output\_config\_bucket) | Config S3 Bucket Terraform object |
-| <a name="output_ecr_encryption_key"></a> [ecr\_encryption\_key](#output\_ecr\_encryption\_key) | The ECR repository encryption KMS key Terraform object. |
+| <a name="output_ecr"></a> [ecr](#output\_ecr) | The ECR repository module outputs. Contains both 'repository' and 'encryption\_key' attributes, that are the ECR repository and KMS encryption key Terraform object respectively. |
 | <a name="output_ecr_repository"></a> [ecr\_repository](#output\_ecr\_repository) | The ECR repository Terraform object. |
-| <a name="output_glue_retraining_job"></a> [glue\_retraining\_job](#output\_glue\_retraining\_job) | The Glue retraining job Terraform object. |
+| <a name="output_glue"></a> [glue](#output\_glue) | The Glue module outputs. Contains both 'retraining\_job' and 'retraining\_role' attributes, that are the Glue retraining job and IAM role Terraform objects respectively. |
 | <a name="output_glue_retraining_role"></a> [glue\_retraining\_role](#output\_glue\_retraining\_role) | The Glue retraining job IAM role Terraform object. |
 | <a name="output_model_bucket"></a> [model\_bucket](#output\_model\_bucket) | Model S3 Bucket Terraform object |
 | <a name="output_s3_encryption_key"></a> [s3\_encryption\_key](#output\_s3\_encryption\_key) | S3 encryption KMS key Terraform Object |
 | <a name="output_sagemaker_endpoint_name"></a> [sagemaker\_endpoint\_name](#output\_sagemaker\_endpoint\_name) | Sagemaker model endpoint name |
 | <a name="output_sagemaker_model_name"></a> [sagemaker\_model\_name](#output\_sagemaker\_model\_name) | Sagemaker model name |
 | <a name="output_sagemaker_notebook_instance"></a> [sagemaker\_notebook\_instance](#output\_sagemaker\_notebook\_instance) | Sagemaker notebook instance Terraform object |
+
+## Destroying Resources
+After creating the resources made using this the module, the resources: 
+- Sagemaker model 
+- Sagemaker Endpoint  
+- Endpoint configuration
+  
+Will not be tracked by your Terraform state file so if you decide to run "terraform destroy" these resources will not be deleted.
+
+To destroy these resourses we recommend that you add these commands to your CI/CD pipeline:
+
+```bash
+aws sagemaker delete-model --model-name < demo-regression-model >
+aws sagemaker delete-endpoint-config --endpoint-config-name < demo-regression-model-config >
+aws sagemaker delete-endpoint --endpoint-name < demo-regression-model >    
+```
+
+But before this you will need to add your AWS credentials to the environment if you have not do already:
+```bash
+aws-access-key-id: < aws-access-key-id >
+aws-secret-access-key: < aws-secret-access-key >
+aws-region: < region >
+```
 <!-- END_TF_DOCS -->

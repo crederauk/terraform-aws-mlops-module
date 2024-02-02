@@ -41,10 +41,10 @@ variable "data_location_s3" {
 
 # Config Bucket
 variable "config_s3_bucket" {
-  description = "The name of an S3 bucket within which glue scripts should be stored."
+  description = "The name of the S3 bucket within which notebook scripts are stored, to be copied onto the instance on boot."
   type        = string
 }
 variable "config_bucket_key_arn" {
-  description = "The ARN of the KMS key using which glue scripts are encrypted in S3."
+  description = "The ARN of the KMS key using which relevant scripts stored in encrypted S3."
   type        = string
 }
