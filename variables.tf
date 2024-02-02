@@ -67,7 +67,7 @@ variable "retraining_schedule" {
   type        = string
   default     = ""
   validation {
-    condition     = contains(["cron(", "rate("], substr(var.retraining_schedule, 0, 4)) || (var.retraining_schedule == "")
+    condition     = contains(["cron(", "rate("], substr(var.retraining_schedule, 0, 5)) || (var.retraining_schedule == "")
     error_message = "The retraining_schedule value must begin with \"cron(\" or \"rate(\"."
   }
 }
