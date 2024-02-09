@@ -13,16 +13,17 @@ resource "aws_sagemaker_notebook_instance_lifecycle_configuration" "training_not
     {
       config_s3_bucket = var.config_s3_bucket
       env = {
-        data_location_s3         = "${var.data_s3_bucket}${var.data_location_s3}"
-        target                   = var.model_target_variable
-        algorithm_choice         = var.algorithm_choice
-        endpoint_name            = local.endpoint_name
-        model_name               = local.model_name
-        model_s3_bucket          = var.model_s3_bucket
-        inference_instance_type  = var.inference_instance_type
-        inference_instance_count = var.inference_instance_count
-        ecr_repo_uri             = var.ecr_repo_uri
-        tuning_metric            = var.tuning_metric
+        data_location_s3          = "${var.data_s3_bucket}${var.data_location_s3}"
+        target                    = var.model_target_variable
+        algorithm_choice          = var.algorithm_choice
+        endpoint_name             = local.endpoint_name
+        model_name                = local.model_name
+        model_s3_bucket           = var.model_s3_bucket
+        inference_instance_type   = var.inference_instance_type
+        inference_instance_count  = var.inference_instance_count
+        ecr_repo_uri              = var.ecr_repo_uri
+        tuning_metric             = var.tuning_metric
+        preprocessing_script_path = var.preprocessing_script_path
       }
     }
   ))

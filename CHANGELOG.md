@@ -1,4 +1,9 @@
 # AWS-MLOps-module
+## [2.0.2] - 09/02/24
+* Added functionality for passing preprocessing script
+
+## [2.0.1] - 02/02/24
+* Updated retraining_schedule validation
 
 ## [2.0.0] - 21/12/23
 **BREAKING CHANGES**

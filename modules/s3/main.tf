@@ -3,7 +3,8 @@
 # The model bucket will contain the model artifact
 # The config-bucket is used to store ipynb files, python files and other configuration files
 locals {
-  file_path = "${path.module}/../../mlops_ml_models"
+  preprocessing_script_path = var.preprocessing_script_path
+  file_path                 = "${path.module}/../../mlops_ml_models"
   files_to_upload = concat(
     tolist(fileset(local.file_path, "*.ipynb")),
     tolist(fileset(local.file_path, "*.py")),
@@ -62,4 +63,13 @@ resource "random_string" "s3_suffix" {
   lower   = true
   special = false
   upper   = false
+}
+
+resource "aws_s3_object" "preprocessing_script_path" {
+  count  = var.preprocessing_script_path != "None" ? 1 : 0
+  bucket = aws_s3_bucket.model_buckets[1].id
+  key    = "preprocess_data.py"
+  source = var.preprocessing_script_path
+  etag   = filemd5(local.preprocessing_script_path)
+  tags   = var.tags
 }

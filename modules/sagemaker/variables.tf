@@ -88,3 +88,8 @@ variable "config_bucket_key_arn" {
   description = "The ARN of the KMS key using which notebook scripts are encrypted in S3."
   type        = string
 }
+
+variable "preprocessing_script_path" {
+  description = "The path the user provides if they want to include their own data cleaning logic"
+  type        = string
+}
