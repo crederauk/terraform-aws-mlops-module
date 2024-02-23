@@ -2,9 +2,7 @@ import tarfile
 import boto3
 
 
-def save_model_to_s3(
-    trained_model_name: str, bucket_name: str
-) -> None:
+def save_model_to_s3(trained_model_name: str, bucket_name: str) -> None:
     """This saves the tar.gz model in an s3 bucket
 
     Args:
@@ -16,5 +14,5 @@ def save_model_to_s3(
 
     s3 = boto3.client("s3")
     s3.upload_file(
-        f"{trained_model_name}.tar.gz", bucket_name,
-        f"{trained_model_name}.tar.gz")
+        f"{trained_model_name}.tar.gz", bucket_name, f"{trained_model_name}.tar.gz"
+    )

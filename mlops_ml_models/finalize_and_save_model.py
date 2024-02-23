@@ -1,8 +1,7 @@
 import importlib
 
 
-def finalize_and_save_model(algorithm_choice: str, bestModel: str,
-                            model_name: str):
+def finalize_and_save_model(algorithm_choice: str, bestModel: str, model_name: str):
     """
     Finalizes the best model obtained from PyCaret and saves it locally.
 
