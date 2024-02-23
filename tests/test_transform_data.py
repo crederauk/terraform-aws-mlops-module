@@ -1,7 +1,6 @@
 from mlops_ml_models.transfom_data import split_data
 import pandas as pd
 import pytest
-from unittest.mock import patch
 
 
 @pytest.fixture
@@ -42,4 +41,6 @@ def test_split_data(mock_df: pd.DataFrame) -> None:
         mock_df (pd.DataFrame): Mock data generated from mock_df function
     """
     train_data, test_data = split_data(mock_df, shuffle=False)
-    assert list(train_data['col1']) == [1, 2, 3, 1, 2, 3, 1, 2] and list(test_data['col1']) == [3, 1]
+    assert list(train_data["col1"]) == [1, 2, 3, 1, 2, 3, 1, 2] and list(
+        test_data["col1"]
+    ) == [3, 1]
