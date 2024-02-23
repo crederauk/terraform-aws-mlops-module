@@ -1,4 +1,4 @@
-from mlops_ml_models.transfom_data import split_data
+from mlops_ml_models.transfom_data import split_data, preprocess_df
 import pandas as pd
 import pytest
 
@@ -44,3 +44,10 @@ def test_split_data(mock_df: pd.DataFrame) -> None:
     assert list(train_data["col1"]) == [1, 2, 3, 1, 2, 3, 1, 2] and list(
         test_data["col1"]
     ) == [3, 1]
+
+def test_preprocess_df(mock_df: pd.DataFrame) -> None:
+    """TODO"""
+    preprocessing_script_path="test"
+    df=preprocess_df(mock_df, preprocessing_script_path)
+    print(df)
+    assert 2==2

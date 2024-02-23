@@ -30,3 +30,17 @@ def split_data(df: pd.DataFrame, shuffle: bool) -> pd.DataFrame:
         return train_data, test_data
     except Exception as e:
         print(f"Error loading data: {e}")
+
+#TODO finish
+def preprocess_df(df,preprocessing_script_path):
+    """"""
+    if preprocessing_script_path:
+        try:
+            print("Loading file")
+            from preprocess_data import preprocess_data
+            df =  preprocess_data(df)
+            message = "preprocess_data function didn't return a dataframe"
+            assertIsInstance(df, pd.DataFrame, message)
+        except ImportError:
+            print("File does not exist")
+    return df
