@@ -66,7 +66,7 @@ resource "random_string" "s3_suffix" {
 }
 
 resource "aws_s3_object" "preprocessing_script_path" {
-  count  = var.preprocessing_script_path != "None" ? 1 : 0
+  count  = var.preprocessing_script_path != null ? 1 : 0
   bucket = aws_s3_bucket.model_buckets[1].id
   key    = "preprocess_data.py"
   source = var.preprocessing_script_path

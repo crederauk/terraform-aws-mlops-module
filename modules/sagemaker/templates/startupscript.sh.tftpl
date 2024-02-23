@@ -13,12 +13,6 @@ cat << EOF > /home/ec2-user/SageMaker/.env
 %{ for key, value in env ~}
 ${key}=${value}
 %{ endfor ~}
-#TODO remplace "None" with None
-if [ ${var.preprocessing_script_path} == "None" ]; then
-    echo "preprocessing_script_path" = "None" >> /home/ec2-user/SageMaker/.env
-else
-    echo "preprocessing_script_path" = preprocess_data.py >> /home/ec2-user/SageMaker/.env
-fi
 EOF
 
 exit 0
