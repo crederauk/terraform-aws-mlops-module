@@ -25,11 +25,21 @@ def mock_df() -> pd.DataFrame:
     )
 
 
-def test_split_data(mock_df: pd.DataFrame, shuffle=False) -> None:
-    """This Test compares if the split_data correctly splits a dataframe into 80% and 20% of rows
+def test_split_data_shuffle(mock_df: pd.DataFrame) -> None:
+    """This Test compares if the split_data correctly splits a dataframe into 80% and 20% of rows with shuffling.
+
+    Args:
+        mock_df (pd.DataFrame): Mock data generated from mock_df function
+    """
+    train_data, test_data = split_data(mock_df, shuffle=True)
+    assert len(train_data) == 8 and len(test_data) == 2
+
+
+def test_split_data(mock_df: pd.DataFrame) -> None:
+    """This Test compares if the split_data correctly splits a dataframe into 80% and 20% of rows with no shuffling.
 
     Args:
         mock_df (pd.DataFrame): Mock data generated from mock_df function
     """
     train_data, test_data = split_data(mock_df, shuffle=False)
-    assert len(train_data) == 8 and len(test_data) == 2
+    assert list(train_data['col1']) == [1, 2, 3, 1, 2, 3, 1, 2] and list(test_data['col1']) == [3, 1]
