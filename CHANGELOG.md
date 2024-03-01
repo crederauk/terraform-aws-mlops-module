@@ -1,5 +1,6 @@
 # AWS-MLOps-module
-## [2.0.2] - 09/02/24
+
+## [2.0.2] - 01/03/24
 * Added functionality for passing preprocessing script
 
 ## [2.0.1] - 02/02/24

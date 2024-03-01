@@ -8,7 +8,6 @@ This repo contains a terraform module with corresponding AWS resources that enab
 
 
 ## Example Usage
-#TODO update
  ```
 module "MLOps" {
   source  = "github.com/crederauk/terraform-aws-mlops-module?ref=<MODULE_VERSION>"
@@ -22,6 +21,7 @@ module "MLOps" {
   algorithm_choice        = "classification"
   sagemaker_training_notebook_instance_type = "ml.m4.xlarge"
   inference_instance_count = 1
+  preprocessing_script_path = "terraform\preprocess_data.py"
   tags = {
     my-tag-key = "my-tag-value"
   }
@@ -67,6 +67,7 @@ No resources.
 | <a name="input_inference_instance_count"></a> [inference\_instance\_count](#input\_inference\_instance\_count) | The initial number of instances to serve the model endpoint | `number` | `1` | no |
 | <a name="input_inference_instance_type"></a> [inference\_instance\_type](#input\_inference\_instance\_type) | The instance type to be created for serving the model. Must be a valid EC2 instance type | `string` | `"ml.t2.medium"` | no |
 | <a name="input_model_target_variable"></a> [model\_target\_variable](#input\_model\_target\_variable) | The dependent variable (or 'label') that the model aims to predict. This should be a column name in the dataset. | `string` | n/a | yes |
+| <a name="input_preprocessing_script_path"></a> [preprocessing\_script\_path](#input\_preprocessing\_script\_path) | The path the user provides if they want to include their own data cleaning logic | `string` | `null` | no |
 | <a name="input_resource_naming_prefix"></a> [resource\_naming\_prefix](#input\_resource\_naming\_prefix) | Naming prefix to be applied to all resources created by this module | `string` | n/a | yes |
 | <a name="input_retrain_model_bool"></a> [retrain\_model\_bool](#input\_retrain\_model\_bool) | Boolean to indicate if the retraining pipeline shoud be added | `bool` | `false` | no |
 | <a name="input_retraining_schedule"></a> [retraining\_schedule](#input\_retraining\_schedule) | Cron expression for the model retraining frequency in the AWS format. See https://docs.aws.amazon.com/lambda/latest/dg/services-cloudwatchevents-expressions.html for details | `string` | `""` | no |
