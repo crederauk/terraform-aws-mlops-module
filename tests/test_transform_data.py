@@ -45,9 +45,10 @@ def test_split_data(mock_df: pd.DataFrame) -> None:
         test_data["col1"]
     ) == [3, 1]
 
+
 def test_preprocess_df(mock_df: pd.DataFrame) -> None:
     """TODO"""
-    preprocessing_script_path="test"
-    df=preprocess_df(mock_df, preprocessing_script_path)
+    preprocessing_script_path = "test"
+    df = preprocess_df(mock_df, preprocessing_script_path)
     print(df)
-    assert 2==2
+    assert 2 == 2
