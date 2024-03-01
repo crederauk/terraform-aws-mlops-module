@@ -47,8 +47,22 @@ def test_split_data(mock_df: pd.DataFrame) -> None:
 
 
 def test_preprocess_df(mock_df: pd.DataFrame) -> None:
-    """TODO"""
-    preprocessing_script_path = "test"
+    """This test checks if the pre-processing function can be imported and execute a custom script to update the dataframe.
+
+    Args:
+    mock_df: mock dataframe"""
+    preprocessing_script_path = "tests\\preprocess_data.py"
     df = preprocess_df(mock_df, preprocessing_script_path)
-    print(df)
-    assert 2 == 2
+
+    assert len(df.columns) == 9
+
+
+def test_preprocess_df_no_path(mock_df: pd.DataFrame) -> None:
+    """This test checks if the pre-processing function doesn't change the data if the preprocessing_script_path is not present.
+
+    Args:
+    mock_df: mock dataframe"""
+    preprocessing_script_path = None
+    df = preprocess_df(mock_df, preprocessing_script_path)
+
+    assert df.equals(mock_df)

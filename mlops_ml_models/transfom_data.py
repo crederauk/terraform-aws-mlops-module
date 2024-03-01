@@ -41,8 +41,7 @@ def preprocess_df(df, preprocessing_script_path):
             from preprocess_data import preprocess_data
 
             df = preprocess_data(df)
-            message = "preprocess_data function didn't return a dataframe"
-            assertIsInstance(df, pd.DataFrame, message)
+            assert isinstance(df, pd.DataFrame)
         except ImportError:
             print("File does not exist")
     return df
