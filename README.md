@@ -21,7 +21,7 @@ module "MLOps" {
   algorithm_choice        = "classification"
   sagemaker_training_notebook_instance_type = "ml.m4.xlarge"
   inference_instance_count = 1
-  preprocessing_script_path = "terraform\preprocess_data.py"
+  preprocessing_script_path = "terraform/preprocess_data.py"
   tags = {
     my-tag-key = "my-tag-value"
   }
