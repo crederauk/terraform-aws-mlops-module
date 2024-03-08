@@ -1,5 +1,11 @@
 # AWS-MLOps-module
 
+## [2.0.2] - 01/03/24
+* Added functionality for passing preprocessing script
+
+## [2.0.1] - 02/02/24
+* Updated retraining_schedule validation
+
 ## [2.0.0] - 21/12/23
 **BREAKING CHANGES**
 * Mandatory variable `resource_naming_prefix` has now been added.

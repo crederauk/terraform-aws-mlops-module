@@ -2,10 +2,15 @@ from sagemaker.model import Model
 
 
 def deploy_model(
-    model_name: str, model_type: str, model_s3_bucket: str, instance_type: str, endpoint_name,
-    role: str, inference_instance_count: int, image_uri: str
+    model_name: str,
+    model_type: str,
+    model_s3_bucket: str,
+    instance_type: str,
+    endpoint_name,
+    role: str,
+    inference_instance_count: int,
+    image_uri: str,
 ) -> None:
-
     """This script deploys the sagemaker endpoint using the tar.gz file
     saved in s3.
 
@@ -23,10 +28,7 @@ def deploy_model(
         image_uri=(image_uri),  # The ECR image you pushed
         model_data=model_file,  # Location of your serialized model
         role=role,
-        env={
-            "MODEL_NAME": model_name,
-            "MODEL_TYPE": model_type
-        }
+        env={"MODEL_NAME": model_name, "MODEL_TYPE": model_type},
     )
     model.deploy(
         initial_instance_count=inference_instance_count,
