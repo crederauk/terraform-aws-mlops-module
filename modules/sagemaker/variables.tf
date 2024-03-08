@@ -92,4 +92,5 @@ variable "config_bucket_key_arn" {
 variable "preprocessing_script_path" {
   description = "The path the user provides if they want to include their own data cleaning logic"
   type        = string
+  default     = null
 }
