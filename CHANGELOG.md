@@ -1,5 +1,8 @@
 # AWS-MLOps-module
 
+## [2.0.3] - 05/04/24
+* Updated preprocess_df in the template notebook
+  
 ## [2.0.2] - 01/03/24
 * Added functionality for passing preprocessing script
 
