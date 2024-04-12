@@ -1,0 +1,24 @@
+pycaret_estimator = Estimator(
+    image_uri="{account_id}.dkr.ecr.eu-west-1.amazonaws.com/mlops-classification-repo:latest",
+    role=role,
+    instance_count=1,
+    instance_type="ml.m5.large",
+    container_entry_point="train.py",
+)
+
+
+pycaret_estimator.set_hyperparameters(algorithm_choice="classification", target=target)
+
+
+training_step = steps.TrainingStep(
+    "Train Step",
+    estimator=pycaret_estimator,
+    data={"train": train_s3_file},
+    job_name=execution_input["JobName"],
+)
+
+
+
+from pycaret.classification import *
+s = setup(data, target = 'Class variable', session_id = 123)
+best = compare_models()

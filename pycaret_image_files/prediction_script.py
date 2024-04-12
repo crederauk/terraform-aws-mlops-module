@@ -14,8 +14,8 @@ logging.basicConfig(level=logging.DEBUG)
 # Instantiate Flask app
 app = Flask(__name__)
 
-MODEL_NAME = os.getenv("MODEL_NAME")
-MODEL_TYPE = os.getenv("MODEL_TYPE")
+MODEL_NAME = os.getenv('MODEL_NAME')
+MODEL_TYPE = os.getenv('MODEL_TYPE')
 
 # Define the model path
 # When you configure the model, you will need to specify the S3 location of
@@ -32,7 +32,8 @@ model = load_model(MODEL_PATH)
 
 @app.route("/ping", methods=["GET"])
 def ping():
-    return flask.Response(response="\n", status=200, mimetype="application/json")
+    return flask.Response(response="\n", status=200,
+                          mimetype="application/json")
 
 
 # Define an endpoint for making predictions
@@ -46,7 +47,7 @@ def predict():
     logging.info(df)
 
     # Make predictions using the loaded model
-    if MODEL_TYPE == "classification":
+    if (MODEL_TYPE == "classification"):
         prediction = model.predict_proba(df)
     else:
         prediction = model.predict(df)
