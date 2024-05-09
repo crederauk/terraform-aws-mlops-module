@@ -91,7 +91,7 @@ def normalise_data(data):
     return df_encoded, categorical_columns
 
 
-def feature_selection(data, target_variable, features_to_keep=0.5):
+def feature_selection(data, target_variable):
     processed_data, categorical_columns = normalise_data(data)
 
     # Setup Ridge classifier

@@ -98,7 +98,7 @@ def test_feature_selection(mock_df_2: pd.DataFrame) -> None:
     mock_df_2: mock dataframe"""
 
     target_variable = 'col1'
-    df = feature_selection(mock_df_2, target_variable, 4)
+    df = feature_selection(mock_df_2, target_variable)
 
     non_important_cols = ['col6', 'col7', 'col8', 'col9']
 
