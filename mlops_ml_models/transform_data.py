@@ -5,6 +5,7 @@ from sklearn.linear_model import RidgeClassifier
 from sklearn.preprocessing import StandardScaler, OneHotEncoder
 import matplotlib.pyplot as plt
 
+
 def split_data(df: pd.DataFrame, shuffle: bool) -> pd.DataFrame:
     """This script split the data into test_data and train_data,
     with optional shuffle function
@@ -74,6 +75,7 @@ def one_hot_encode(data):
 
     return df_encoded, categorical_columns
 
+
 def normalise_data(data):
     # Data normalisation
     numeric_features = data.drop(columns=[target_variable]).select_dtypes(include=np.number).columns.tolist()
@@ -88,8 +90,8 @@ def normalise_data(data):
 
     return df_encoded, categorical_columns
 
-def feature_selection(data, target_variable, features_to_keep=0.5):
 
+def feature_selection(data, target_variable, features_to_keep=0.5):
     processed_data, categorical_columns = normalise_data(data)
 
     # Setup Ridge classifier
@@ -110,38 +112,37 @@ def feature_selection(data, target_variable, features_to_keep=0.5):
 
     # reverse the one hot encoding by averaging the importance for the encoded columns
     for col in categorical_columns:
-        unique=data[col].unique()
-        tot_importance=0
+        unique = data[col].unique()
+        tot_importance = 0
         for s in unique:
-            col_name=f"{col}_{s}"
-            col_importance=feature_importance['importance'][col_name]
+            col_name = f"{col}_{s}"
+            col_importance = feature_importance['importance'][col_name]
             print(f"{col_name}: {col_importance}")
-            tot_importance+=col_importance
-            feature_importance=feature_importance.drop(index=col_name)
-        avg_importance=tot_importance/len(unique)
-        print(f"Average importance for column {col} is {avg_importance}")
+            tot_importance += col_importance
+            feature_importance = feature_importance.drop(index=col_name)
+        avg_importance = tot_importance / len(unique)
         feature_importance.loc[col] = avg_importance
 
-    feature_importance=feature_importance.sort_values(by='importance',  ascending=False)
+    feature_importance = feature_importance.sort_values(by='importance', ascending=False)
     print('\n\nFeature importances:')
     print(feature_importance)
     print('\n')
 
+    std = feature_importance['importance'].std()
+    max_importance = feature_importance['importance'].max()
+    threshold = max_importance - std
 
-    if features_to_keep < 1:
-        features_to_keep = int(features_to_keep * len(feature_importance))
-    else:
-        features_to_keep = min(features_to_keep, len(feature_importance))
-
-    important_features = feature_importance[:features_to_keep].index.tolist()
-    discarded_features = feature_importance[features_to_keep:].index.tolist()
+    important_features = feature_importance[feature_importance['importance'] > threshold].index.tolist()
+    discarded_features = feature_importance[feature_importance['importance'] <= threshold].index.tolist()
 
     print(f"Keeping features: {important_features}\n")
     print(f"Discarding features: {discarded_features}\n")
 
     # Plot feature importances
-    plt.bar(important_features, feature_importance.loc[important_features, 'importance'], color='darkblue', label='Kept Features')
-    plt.bar(discarded_features, feature_importance.loc[discarded_features, 'importance'], color='grey', label='Discarded Features')
+    plt.bar(important_features, feature_importance.loc[important_features, 'importance'], color='darkblue',
+            label='Kept Features')
+    plt.bar(discarded_features, feature_importance.loc[discarded_features, 'importance'], color='grey',
+            label='Discarded Features')
     plt.xlabel('Features')
     plt.ylabel('Importance')
     plt.title('Feature Importances from Ridge Classifier')

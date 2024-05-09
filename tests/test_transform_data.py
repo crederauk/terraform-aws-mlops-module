@@ -44,7 +44,6 @@ def mock_df_2() -> pd.DataFrame:
             "col7": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
             "col8": [0.08, 0.21, 0.63, 0.32, 0.81, 0.73, 0.92, 0.39, 0.66, 0.51],
             "col9": ["G", "W", "M", "Q", "S", "P", "G", "Z", "C", "A"],
-            "col1_again": [1, 2, 3, 1, 2, 3, 1, 2, 3, 1]
         }
     )
 
@@ -98,7 +97,8 @@ def test_feature_selection(mock_df_2: pd.DataFrame) -> None:
     Args:
     mock_df_2: mock dataframe"""
 
-    df = feature_selection(mock_df_2)
+    target_variable = 'col1'
+    df = feature_selection(mock_df_2, target_variable, 4)
 
     non_important_cols = ['col6', 'col7', 'col8', 'col9']
 
