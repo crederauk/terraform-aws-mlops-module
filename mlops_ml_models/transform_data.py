@@ -70,37 +70,24 @@ def feature_selection(data, target_variable, algorithm_choice):
     """
 
     if algorithm_choice == "classification":
-        from pycaret.classification import setup, get_config
-        from sklearn.linear_model import RidgeClassifier
-        # Setup Ridge classifier
-        s = setup(data=data, target=target_variable, feature_selection=False)
+        from pycaret.classification import setup, get_config, create_model
+        s = setup(data=data, target=target_variable, fold=3)
+        model = create_model("ridge")
+        coefficients = np.abs(model.coef_).mean(axis=0)
 
-        x_train = get_config('X_train')
-        y_train = get_config('y_train')
-
-        model = RidgeClassifier()
-        model.fit(x_train, y_train)
-
-        # Extract feature importance dataframe
-        feature_importance = pd.DataFrame(np.abs(model.coef_[0]),
-                                          index=x_train.columns,
-                                          columns=['importance']).sort_values('importance', ascending=False)
 
     elif algorithm_choice == "regression":
         from pycaret.regression import setup, get_config, create_model
-        s = setup(data=data, target=target_variable, feature_selection=False)
-
-        model = create_model('lr')
-
+        s = setup(data=data, target=target_variable)
+        model = create_model("lr")
         coefficients = model.coef_
-
-        X_train_transformed = get_config('X_train')
-
-        feature_importance = pd.Series(coefficients, index=X_train_transformed.columns).sort_values(ascending=False).to_frame()
-        feature_importance.rename(columns={0: 'importance'}, inplace=True) # Rename to match df generated from Ridge classifier
 
     else:
         print(f"The algorithm {algorithm_choice} is not supported for feature selection, only classification and regression analysis is supported.")
         return pd.DataFrame([])
 
+    X_train_transformed = get_config('X_train')
+
+    feature_importance = pd.Series(coefficients, index=X_train_transformed.columns).sort_values(ascending=False).to_frame()
+    feature_importance.rename(columns={0: 'importance'}, inplace=True)
     return feature_importance
