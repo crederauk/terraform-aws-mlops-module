@@ -63,7 +63,8 @@ def feature_selection(data, target_variable, algorithm_choice):
 
     Args:
         data (pd.DataFrame): dataframe that you want to perform feature selection on
-        target_variable (string): name of the column that is the target feature
+        target_variable (str): Name of the column that is the target feature\
+        algorithm_choice (str): Name of the algorithm being used, must be either 'classification' or 'regression'
 
     Returns:
         pd.DataFrame: feature_importance
