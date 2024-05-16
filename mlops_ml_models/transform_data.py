@@ -56,7 +56,7 @@ def preprocess_df(df, preprocessing_script_path):
     return df
 
 
-def feature_selection(data, target_variable, algorithm_choice):
+def get_feature_importances(data, target_variable, algorithm_choice):
     """This function takes in a dataframe and performs feature importance analysis on the features within the data, using
     either the ridge classifier or linear regressor based on the type of analysis, and then returns a dataframe containing
     the list of feature importances.

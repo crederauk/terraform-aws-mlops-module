@@ -1,4 +1,4 @@
-from mlops_ml_models.transform_data import split_data, preprocess_df, feature_selection
+from mlops_ml_models.transform_data import split_data, preprocess_df, get_feature_importances
 import pandas as pd
 import pytest
 import numpy as np
@@ -135,7 +135,7 @@ def test_feature_selection_classification(mock_df_classification: pd.DataFrame) 
     mock_df_classification: mock dataframe"""
 
     target_variable = 'col1'
-    feature_importance = feature_selection(mock_df_classification, target_variable, "classification")
+    feature_importance = get_feature_importances(mock_df_classification, target_variable, "classification")
 
     std = feature_importance['importance'].std()
     max_importance = feature_importance['importance'].max()
@@ -157,7 +157,7 @@ def test_feature_selection_regression(mock_df_regression: pd.DataFrame) -> None:
     mock_df_regression: mock dataframe"""
 
     target_variable = 'col1'
-    feature_importance = feature_selection(mock_df_regression, target_variable, "regression")
+    feature_importance = get_feature_importances(mock_df_regression, target_variable, "regression")
 
     std = feature_importance['importance'].std()
     max_importance = feature_importance['importance'].max()
