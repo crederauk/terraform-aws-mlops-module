@@ -33,8 +33,7 @@ def mock_df_classification() -> pd.DataFrame:
     is used to test the feature selection in the case of classification
 
     Returns:
-        pd.DataFrame: dataframe created from the script. Should be the same as
-        in the resources.
+        pd.DataFrame: dataframe created from the script.
     """
     return pd.DataFrame(
         {
@@ -63,8 +62,7 @@ def mock_df_regression() -> pd.DataFrame:
     is used to test the feature selection in the case of regression.
 
     Returns:
-        df: dataframe created from the script. Should be the same as
-        in the resources.
+        df: dataframe created from the script.
     """
     np.random.seed(1)
 
