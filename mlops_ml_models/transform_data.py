@@ -1,9 +1,5 @@
 import pandas as pd
 import numpy as np
-from pycaret.classification import setup, get_config
-from sklearn.linear_model import RidgeClassifier
-from sklearn.preprocessing import StandardScaler, OneHotEncoder
-import matplotlib.pyplot as plt
 
 
 def split_data(df: pd.DataFrame, shuffle: bool) -> pd.DataFrame:
@@ -60,96 +56,51 @@ def preprocess_df(df, preprocessing_script_path):
     return df
 
 
-def one_hot_encode(data):
-    categorical_columns = data.select_dtypes(include=['object']).columns.tolist()
+def feature_selection(data, target_variable, algorithm_choice):
+    """This function takes in a dataframe and performs feature importance analysis on the features within the data, using
+    either the ridge classifier or linear regressor based on the type of analysis, and then returns a dataframe containing
+    the list of feature importances.
 
-    encoder = OneHotEncoder(sparse_output=False)
+    Args:
+        data (pd.DataFrame): dataframe that you want to perform feature selection on
+        target_variable (string): name of the column that is the target feature
 
-    one_hot_encoded = encoder.fit_transform(data[categorical_columns])
+    Returns:
+        pd.DataFrame: feature_importance
+    """
 
-    one_hot_df = pd.DataFrame(one_hot_encoded, columns=encoder.get_feature_names_out(categorical_columns))
+    if algorithm_choice == "classification":
+        from pycaret.classification import setup, get_config
+        from sklearn.linear_model import RidgeClassifier
+        # Setup Ridge classifier
+        s = setup(data=data, target=target_variable, feature_selection=False)
 
-    df_encoded = pd.concat([data, one_hot_df], axis=1)
+        x_train = get_config('X_train')
+        y_train = get_config('y_train')
 
-    df_encoded = df_encoded.drop(categorical_columns, axis=1)
+        model = RidgeClassifier()
+        model.fit(x_train, y_train)
 
-    return df_encoded, categorical_columns
+        # Extract feature importance dataframe
+        feature_importance = pd.DataFrame(np.abs(model.coef_[0]),
+                                          index=x_train.columns,
+                                          columns=['importance']).sort_values('importance', ascending=False)
 
+    elif algorithm_choice == "regression":
+        from pycaret.regression import setup, get_config, create_model
+        s = setup(data=data, target=target_variable, feature_selection=False)
 
-def normalise_data(data):
-    # Data normalisation
-    numeric_features = data.drop(columns=[target_variable]).select_dtypes(include=np.number).columns.tolist()
+        model = create_model('lr')
 
-    scaler = StandardScaler()
-    scaled_features = scaler.fit_transform(data[numeric_features])
+        coefficients = model.coef_
 
-    scaled_data = pd.DataFrame(scaled_features, columns=numeric_features)
-    scaled_data = pd.concat([scaled_data, data[data.columns.difference(numeric_features)]], axis=1)
+        X_train_transformed = get_config('X_train')
 
-    df_encoded, categorical_columns = one_hot_encode(scaled_data)
+        feature_importance = pd.Series(coefficients, index=X_train_transformed.columns).sort_values(ascending=False).to_frame()
+        feature_importance.rename(columns={0: 'importance'}, inplace=True) # Rename to match df generated from Ridge classifier
 
-    return df_encoded, categorical_columns
+    else:
+        print(f"The algorithm {algorithm_choice} is not supported for feature selection, only classification and regression analysis is supported.")
+        return pd.DataFrame([])
 
-
-def feature_selection(data, target_variable):
-    processed_data, categorical_columns = normalise_data(data)
-
-    # Setup Ridge classifier
-    s = setup(data=processed_data, target=target_variable, feature_selection=False)
-
-    X_train = get_config('X_train')
-    y_train = get_config('y_train')
-
-    print("Getting feature importances...")
-    print("Creating Ridge model...")
-    model = RidgeClassifier()
-    model.fit(X_train, y_train)
-
-    # Extract feature importance dataframe
-    feature_importance = pd.DataFrame(np.abs(model.coef_[0]),
-                                      index=X_train.columns,
-                                      columns=['importance']).sort_values('importance', ascending=False)
-
-    # reverse the one hot encoding by averaging the importance for the encoded columns
-    for col in categorical_columns:
-        unique = data[col].unique()
-        tot_importance = 0
-        for s in unique:
-            col_name = f"{col}_{s}"
-            col_importance = feature_importance['importance'][col_name]
-            print(f"{col_name}: {col_importance}")
-            tot_importance += col_importance
-            feature_importance = feature_importance.drop(index=col_name)
-        avg_importance = tot_importance / len(unique)
-        feature_importance.loc[col] = avg_importance
-
-    feature_importance = feature_importance.sort_values(by='importance', ascending=False)
-    print('\n\nFeature importances:')
-    print(feature_importance)
-    print('\n')
-
-    std = feature_importance['importance'].std()
-    max_importance = feature_importance['importance'].max()
-    threshold = max_importance - std
-
-    important_features = feature_importance[feature_importance['importance'] > threshold].index.tolist()
-    discarded_features = feature_importance[feature_importance['importance'] <= threshold].index.tolist()
-
-    print(f"Keeping features: {important_features}\n")
-    print(f"Discarding features: {discarded_features}\n")
-
-    # Plot feature importances
-    plt.bar(important_features, feature_importance.loc[important_features, 'importance'], color='darkblue',
-            label='Kept Features')
-    plt.bar(discarded_features, feature_importance.loc[discarded_features, 'importance'], color='grey',
-            label='Discarded Features')
-    plt.xlabel('Features')
-    plt.ylabel('Importance')
-    plt.title('Feature Importances from Ridge Classifier')
-    plt.xticks(rotation=90)
-    plt.legend()
-    plt.show()
-
-    # Return modifed dataframe
-    data_important_features = data[important_features + [target_variable]]
-    return data_important_features
+    return feature_importance
