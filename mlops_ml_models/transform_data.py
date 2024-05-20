@@ -62,8 +62,8 @@ def preprocess_df(df, preprocessing_script_path):
 
 def feature_selection(data, target_variable, algorithm_choice, threshold=None):
     """This function takes in a dataframe and performs feature importance analysis on the features within the data, using
-    either the ridge classifier or linear regressor based on the type of analysis, and then returns a dataframe containing
-    the list of feature importances.
+    either the ridge classifier or linear regressor based on the type of analysis, and then returns a modified dataframe of
+    the original data but only with the important features kept.
 
     Args:
         data (pd.DataFrame): dataframe that you want to perform feature selection on
