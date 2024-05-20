@@ -24,7 +24,7 @@ def mock_df() -> pd.DataFrame:
         }
     )
 
-
+@pytest.fixture
 def mock_df_classification() -> pd.DataFrame:
     """This creates a mock dataframe based on the data
     entered in the columns below. col1 is the 'feature', cols 2-5 are directly
@@ -53,7 +53,7 @@ def mock_df_classification() -> pd.DataFrame:
         }
     )
 
-
+@pytest.fixture
 def mock_df_regression() -> pd.DataFrame:
     """This creates a mock dataframe based on a randomly generated column
     col1 is the 'feature', cols 2-4 are directly
