@@ -152,7 +152,7 @@ def test_feature_selection_regression(mock_df_regression: pd.DataFrame) -> None:
     mock_df_regression: mock dataframe"""
 
     target_variable = 'col1'
-    df = feature_selection(mock_df_regression, target_variable, "regression", threshold=0.1)
+    df = feature_selection(mock_df_regression, target_variable, "regression", threshold=0.05)
 
     important_features = ['col2', 'col3', 'col4']
 

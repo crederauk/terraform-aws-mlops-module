@@ -76,13 +76,13 @@ def feature_selection(data, target_variable, algorithm_choice, threshold=None):
     """
 
     if algorithm_choice == "classification":
-        s = setup_classification(data=data, target=target_variable, fold=3, session_id=123)
+        setup_classification(data=data, target=target_variable, fold=3, session_id=123)
         model = create_model_classification("ridge")
         coefficients = np.abs(model.coef_).mean(axis=0)
         X_train_transformed = get_config_classification('X_train')
 
     elif algorithm_choice == "regression":
-        s = setup_regression(data=data, target=target_variable, session_id=123)
+        setup_regression(data=data, target=target_variable, session_id=123)
         model = create_model_regression("lr")
         coefficients = model.coef_
         X_train_transformed = get_config_regression('X_train')
