@@ -43,7 +43,7 @@ def mock_df_classification() -> pd.DataFrame:
             "col2_C": ["0", "0", "1", "0", "0", "1", "0", "0", "1", "0"],
             "col3": [2, 3, 4, 2, 3, 4, 2, 3, 4, 2],
             "col4": [1, 4, 9, 1, 4, 9, 1, 4, 9, 1],
-            "col5": [1, 1.41, 1.73, 1, 1.41, 1.73, 1, 1.41, 1.73, 1],
+            "col5": [1, 8, 27, 1, 8, 27, 1, 8, 27, 1],
             "col6": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
             "col7": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
             "col8": [0.08, 0.21, 0.63, 0.32, 0.81, 0.73, 0.92, 0.39, 0.66, 0.51],
@@ -148,7 +148,7 @@ def test_feature_selection_regression(mock_df_regression: pd.DataFrame) -> None:
     mock_df_regression: mock dataframe"""
 
     target_variable = 'col1'
-    df = feature_selection(mock_df_classification, target_variable, "regression", threshold=0.1)
+    df = feature_selection(mock_df_regression, target_variable, "regression", threshold=0.1)
 
     important_features = ['col2', 'col3', 'col4']
 
