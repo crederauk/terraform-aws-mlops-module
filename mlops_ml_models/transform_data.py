@@ -1,8 +1,8 @@
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-from pycaret.classification import setup as setup_classification, create_model as create_model_classification, get_config
-from pycaret.regression import setup as setup_regression, create_model as create_model_regression
+from pycaret.classification import setup as setup_classification, create_model as create_model_classification, get_config as get_config_classification
+from pycaret.regression import setup as setup_regression, create_model as create_model_regression, get_config as get_config_regression
 
 
 def split_data(df: pd.DataFrame, shuffle: bool) -> pd.DataFrame:
@@ -76,20 +76,22 @@ def feature_selection(data, target_variable, algorithm_choice, threshold=None):
     """
 
     if algorithm_choice == "classification":
-        setup_classification(data=data, target=target_variable, fold=3, session_id=123)
+        s = setup_classification(data=data, target=target_variable, fold=3, session_id=123)
         model = create_model_classification("ridge")
         coefficients = np.abs(model.coef_).mean(axis=0)
+        X_train_transformed = get_config_classification('X_train')
 
     elif algorithm_choice == "regression":
-        setup_regression(data=data, target=target_variable, session_id=123)
+        s = setup_regression(data=data, target=target_variable, session_id=123)
         model = create_model_regression("lr")
         coefficients = model.coef_
+        X_train_transformed = get_config_regression('X_train')
 
     else:
         print(f"The algorithm {algorithm_choice} is not supported for feature selection, only classification and regression analysis is supported.")
         return pd.DataFrame([])
 
-    X_train_transformed = get_config('X_train')
+
 
     feature_importance = pd.Series(coefficients, index=X_train_transformed.columns).sort_values(ascending=False).to_frame()
     feature_importance.rename(columns={0: 'importance'}, inplace=True)

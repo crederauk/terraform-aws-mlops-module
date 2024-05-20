@@ -66,16 +66,18 @@ def mock_df_regression() -> pd.DataFrame:
     Returns:
         df: dataframe created from the script.
     """
-    np.random.seed(1)
+    np.random.seed(42)
 
     n_samples = 100
+    target_variable = "col1"
     df = pd.DataFrame({
-        'col1': np.random.uniform(1, 100, n_samples)
+        target_variable: np.random.uniform(1, 100, n_samples)
     })
 
-    df["col2"] = df['col1'] * 2
-    df["col3"] = df['col1'] / 2
-    df["col4"] = df['col1'] + 20
+    # Create features that are related to the target variable
+    df["col2"] = df[target_variable] * 2
+    df["col3"] = df[target_variable] / 2
+    df["col4"] = df[target_variable] + 20
     df["col5"] = np.random.normal(0, 1, n_samples)
     df["col6"] = np.random.uniform(0, 1, n_samples)
     df["col7"] = np.random.randint(0, 2, n_samples)
