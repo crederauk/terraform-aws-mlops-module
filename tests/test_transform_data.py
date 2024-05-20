@@ -1,4 +1,4 @@
-from mlops_ml_models.transform_data import split_data, preprocess_df, get_feature_importances
+from mlops_ml_models.transform_data import split_data, preprocess_df, feature_selection
 import pandas as pd
 import pytest
 import numpy as np
@@ -133,19 +133,11 @@ def test_feature_selection_classification(mock_df_classification: pd.DataFrame) 
     mock_df_classification: mock dataframe"""
 
     target_variable = 'col1'
-    feature_importance = get_feature_importances(mock_df_classification, target_variable, "classification")
+    df = feature_selection(mock_df_classification, target_variable, "classification", threshold=0.1)
 
-    std = feature_importance['importance'].std()
-    max_importance = feature_importance['importance'].max()
-    threshold = max_importance - std
+    important_features = ['col2_A', 'col2_B', 'col2_C', 'col3', 'col4', 'col5']
 
-    important_features = feature_importance[feature_importance['importance'] > threshold].index.tolist()
-
-    df = mock_df_classification[important_features + [target_variable]]
-
-    non_important_cols = ['col6', 'col7', 'col8', 'col9_G', 'col9_W', 'col9_M']
-
-    assert not df.index.isin(non_important_cols).any()
+    assert set(important_features).issubset(df.columns)
 
 def test_feature_selection_regression(mock_df_regression: pd.DataFrame) -> None:
     """This test checks if the feature selection function is able to only select the important features in the
@@ -155,16 +147,8 @@ def test_feature_selection_regression(mock_df_regression: pd.DataFrame) -> None:
     mock_df_regression: mock dataframe"""
 
     target_variable = 'col1'
-    feature_importance = get_feature_importances(mock_df_regression, target_variable, "regression")
+    df = feature_selection(mock_df_classification, target_variable, "regression", threshold=0.1)
 
-    std = feature_importance['importance'].std()
-    max_importance = feature_importance['importance'].max()
-    threshold = max_importance - std
+    important_features = ['col2', 'col3', 'col4']
 
-    important_features = feature_importance[feature_importance['importance'] > threshold].index.tolist()
-
-    df = mock_df_regression[important_features + [target_variable]]
-
-    non_important_cols = ['col5', 'col6', 'col7']
-
-    assert not df.index.isin(non_important_cols).any()
+    assert set(important_features).issubset(df.columns)

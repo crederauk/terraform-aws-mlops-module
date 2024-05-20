@@ -1,5 +1,9 @@
 import pandas as pd
 import numpy as np
+from pycaret.classification import setup as setup_classification, create_model as create_model_classification, get_config
+from pycaret.regression import setup as setup_regression, create_model as create_model_regression
+
+
 
 
 def split_data(df: pd.DataFrame, shuffle: bool) -> pd.DataFrame:
@@ -56,31 +60,31 @@ def preprocess_df(df, preprocessing_script_path):
     return df
 
 
-def get_feature_importances(data, target_variable, algorithm_choice):
+def feature_selection(data, target_variable, algorithm_choice, threshold=None):
     """This function takes in a dataframe and performs feature importance analysis on the features within the data, using
     either the ridge classifier or linear regressor based on the type of analysis, and then returns a dataframe containing
     the list of feature importances.
 
     Args:
         data (pd.DataFrame): dataframe that you want to perform feature selection on
-        target_variable (str): Name of the column that is the target feature\
+        target_variable (str): Name of the column that is the target feature
         algorithm_choice (str): Name of the algorithm being used, must be either 'classification' or 'regression'
+        threshold (float): A number between 0-1 to manually set the threshold above which features are kept. If no
+                           value is passed, it defaults to the max feature importance minus 1 standard deviation.
 
     Returns:
-        pd.DataFrame: feature_importance
+        pd.DataFrame: data_important_features
     """
 
     if algorithm_choice == "classification":
-        from pycaret.classification import setup, get_config, create_model
-        s = setup(data=data, target=target_variable, fold=3)
-        model = create_model("ridge")
+        s = setup_classification(data=data, target=target_variable, fold=3, session_id=123)
+        model = create_model_classification("ridge")
         coefficients = np.abs(model.coef_).mean(axis=0)
 
 
     elif algorithm_choice == "regression":
-        from pycaret.regression import setup, get_config, create_model
-        s = setup(data=data, target=target_variable)
-        model = create_model("lr")
+        s = setup_regression(data=data, target=target_variable, session_id=123)
+        model = create_model_regression("lr")
         coefficients = model.coef_
 
     else:
@@ -91,4 +95,34 @@ def get_feature_importances(data, target_variable, algorithm_choice):
 
     feature_importance = pd.Series(coefficients, index=X_train_transformed.columns).sort_values(ascending=False).to_frame()
     feature_importance.rename(columns={0: 'importance'}, inplace=True)
-    return feature_importance
+
+    if threshold == None:
+        std = feature_importance['importance'].std()
+        max_importance = feature_importance['importance'].max()
+        threshold = max_importance - std
+
+    print('\n\nFeature importance dataframe:')
+    print(feature_importance)
+    print('\n')
+
+    important_features = feature_importance[feature_importance['importance'] > threshold].index.tolist()
+    discarded_features = feature_importance[feature_importance['importance'] <= threshold].index.tolist()
+
+    # Plot feature importances
+    plt.bar(important_features, feature_importance.loc[important_features, 'importance'], color='darkblue', label='Kept Features')
+    plt.bar(discarded_features, feature_importance.loc[discarded_features, 'importance'], color='grey', label='Discarded Features')
+    plt.xlabel('Features')
+    plt.ylabel('Importance')
+    plt.title(f'Feature Importances')
+    plt.axhline(y=threshold, color='r', linestyle='--', label=f'Threshold = {threshold:.2f}')
+    plt.xticks(rotation=90)
+    plt.legend()
+    plt.show()
+
+
+    print(f"Keeping features: {important_features}\n")
+    print(f"Discarding features: {discarded_features}\n")
+
+    data_important_features = data[important_features + [target_variable]]
+
+    return data_important_features
