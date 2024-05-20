@@ -91,8 +91,6 @@ def feature_selection(data, target_variable, algorithm_choice, threshold=None):
         print(f"The algorithm {algorithm_choice} is not supported for feature selection, only classification and regression analysis is supported.")
         return pd.DataFrame([])
 
-
-
     feature_importance = pd.Series(coefficients, index=X_train_transformed.columns).sort_values(ascending=False).to_frame()
     feature_importance.rename(columns={0: 'importance'}, inplace=True)
 
