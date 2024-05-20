@@ -24,6 +24,7 @@ def mock_df() -> pd.DataFrame:
         }
     )
 
+
 @pytest.fixture
 def mock_df_classification() -> pd.DataFrame:
     """This creates a mock dataframe based on the data
@@ -52,6 +53,7 @@ def mock_df_classification() -> pd.DataFrame:
             "col9_M": ["0", "0", "1", "1", "0", "0", "0", "0", "0", "1"],
         }
     )
+
 
 @pytest.fixture
 def mock_df_regression() -> pd.DataFrame:
