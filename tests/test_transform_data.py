@@ -139,6 +139,7 @@ def test_feature_selection_classification(mock_df_classification: pd.DataFrame) 
 
     assert set(important_features).issubset(df.columns)
 
+
 def test_feature_selection_regression(mock_df_regression: pd.DataFrame) -> None:
     """This test checks if the feature selection function is able to only select the important features in the
     mock_df_regression dataframe for regression.

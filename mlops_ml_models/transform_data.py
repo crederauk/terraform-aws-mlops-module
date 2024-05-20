@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+import matplotlib.pyplot as plt
 from pycaret.classification import setup as setup_classification, create_model as create_model_classification, get_config
 from pycaret.regression import setup as setup_regression, create_model as create_model_regression
 
@@ -77,13 +78,12 @@ def feature_selection(data, target_variable, algorithm_choice, threshold=None):
     """
 
     if algorithm_choice == "classification":
-        s = setup_classification(data=data, target=target_variable, fold=3, session_id=123)
+        setup_classification(data=data, target=target_variable, fold=3, session_id=123)
         model = create_model_classification("ridge")
         coefficients = np.abs(model.coef_).mean(axis=0)
 
-
     elif algorithm_choice == "regression":
-        s = setup_regression(data=data, target=target_variable, session_id=123)
+        setup_regression(data=data, target=target_variable, session_id=123)
         model = create_model_regression("lr")
         coefficients = model.coef_
 
@@ -96,7 +96,7 @@ def feature_selection(data, target_variable, algorithm_choice, threshold=None):
     feature_importance = pd.Series(coefficients, index=X_train_transformed.columns).sort_values(ascending=False).to_frame()
     feature_importance.rename(columns={0: 'importance'}, inplace=True)
 
-    if threshold == None:
+    if threshold is None:
         std = feature_importance['importance'].std()
         max_importance = feature_importance['importance'].max()
         threshold = max_importance - std
@@ -113,12 +113,11 @@ def feature_selection(data, target_variable, algorithm_choice, threshold=None):
     plt.bar(discarded_features, feature_importance.loc[discarded_features, 'importance'], color='grey', label='Discarded Features')
     plt.xlabel('Features')
     plt.ylabel('Importance')
-    plt.title(f'Feature Importances')
+    plt.title('Feature Importances')
     plt.axhline(y=threshold, color='r', linestyle='--', label=f'Threshold = {threshold:.2f}')
     plt.xticks(rotation=90)
     plt.legend()
     plt.show()
-
 
     print(f"Keeping features: {important_features}\n")
     print(f"Discarding features: {discarded_features}\n")
