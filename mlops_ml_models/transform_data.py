@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 from pycaret.classification import setup as setup_classification, create_model as create_model_classification, get_config
 from pycaret.regression import setup as setup_regression, create_model as create_model_regression
 
+
 def split_data(df: pd.DataFrame, shuffle: bool) -> pd.DataFrame:
     """This script split the data into test_data and train_data,
     with optional shuffle function
