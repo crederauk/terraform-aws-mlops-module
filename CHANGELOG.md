@@ -1,5 +1,8 @@
 # AWS-MLOps-module
 
+## [2.0.4] - 07/06/24
+* Added feature selection to the notebook
+
 ## [2.0.3] - 05/04/24
 * Updated preprocess_df in the template notebook
   
