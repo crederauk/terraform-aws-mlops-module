@@ -139,9 +139,9 @@ def test_feature_selection_classification(mock_df_classification: pd.DataFrame) 
     target_variable = 'col1'
     df = feature_selection(mock_df_classification, target_variable, "classification", threshold=0.1)
 
-    important_features = ['col2_A', 'col2_B', 'col2_C', 'col3', 'col4', 'col5']
+    expected_cols = ['col2_A', 'col2_B', 'col2_C', 'col3', 'col4', 'col5', target_variable]
 
-    assert set(important_features).issubset(df.columns)
+    assert set(df.columns) == set(expected_cols)
 
 
 def test_feature_selection_regression(mock_df_regression: pd.DataFrame) -> None:
@@ -154,6 +154,6 @@ def test_feature_selection_regression(mock_df_regression: pd.DataFrame) -> None:
     target_variable = 'col1'
     df = feature_selection(mock_df_regression, target_variable, "regression", threshold=0.05)
 
-    important_features = ['col2', 'col3', 'col4']
+    expected_cols = ['col2', 'col3', 'col4', target_variable]
 
-    assert set(important_features).issubset(df.columns)
+    assert set(df.columns) == set(expected_cols)
